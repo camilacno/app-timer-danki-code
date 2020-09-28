@@ -1,13 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Picker, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
+import Counter from './Counter';
 
 export default function App() {
   const [status, setStatus] = useState('select');
 
+  const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
-  const [minutes, setMinutes] = useState(0);
   const [alarmSounds, setAlarmSounds] = useState([
     {
       id: 1,
@@ -77,7 +78,11 @@ export default function App() {
             >
               {numbers.map(function (val) {
                 return (
-                  <Picker.Item label={val.toString()} value={val.toString()} />
+                  <Picker.Item
+                    key={val}
+                    label={val.toString()}
+                    value={val.toString()}
+                  />
                 );
               })}
             </Picker>
@@ -109,8 +114,8 @@ export default function App() {
             if (alarm?.selected) {
               return (
                 <TouchableOpacity
-                  style={styles.btnAlarmSelected}
                   key={alarm.id}
+                  style={styles.btnAlarmSelected}
                   onPress={() => chooseAlarm(alarm.id)}
                 >
                   <Text style={{ color: '#fff' }}>{alarm.sound}</Text>
@@ -140,9 +145,11 @@ export default function App() {
     );
   } else if (status == 'play') {
     return (
-      <View>
-        <Text>Sound On!</Text>
-      </View>
+      <Counter
+        setStatus={setStatus}
+        minutes={minutes}
+        seconds={seconds}
+      ></Counter>
     );
   }
 }
