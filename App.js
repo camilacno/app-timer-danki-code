@@ -2,31 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Picker, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
+
 import Counter from './Counter';
 
 export default function App() {
   const [status, setStatus] = useState('select');
 
-  const [minutes, setMinutes] = useState(1);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(1);
+  const [minutes, setMinutes] = useState(0);
   const [alarmSounds, setAlarmSounds] = useState([
     {
       id: 1,
       selected: false,
       sound: 'alarm 1',
-      file: 'alarm1.mp3',
+      file: require('./assets/alarm1.mp3'),
     },
     {
       id: 2,
       selected: false,
       sound: 'alarm 2',
-      file: 'alarm2.mp3',
+      file: require('./assets/alarm2.mp3'),
     },
     {
       id: 3,
       selected: false,
       sound: 'alarm 3',
-      file: 'alarm3.mp3',
+      file: require('./assets/alarm3.mp3'),
     },
   ]);
 
@@ -64,8 +65,8 @@ export default function App() {
           }}
         />
 
-        <Text style={{ color: '#fff', fontSize: 20, padding: 10 }}>
-          Define your timer:
+        <Text style={{ color: '#fff', fontSize: 30, padding: 10 }}>
+          Set your timer:
         </Text>
 
         <View style={styles.pickersContainer}>
@@ -76,6 +77,8 @@ export default function App() {
               selectedValue={minutes}
               onValueChange={(itemValue, itemIndex) => setMinutes(itemValue)}
             >
+              <Picker.Item label='0' value='0' />
+
               {numbers.map(function (val) {
                 return (
                   <Picker.Item
@@ -95,7 +98,6 @@ export default function App() {
               onValueChange={(itemValue, itemIndex) => setSeconds(itemValue)}
               style={{ height: 50, width: 100, color: 'white' }}
             >
-              <Picker.Item label='0' value='0' />
               {numbers.map(function (val) {
                 return (
                   <Picker.Item
@@ -146,7 +148,10 @@ export default function App() {
   } else if (status == 'play') {
     return (
       <Counter
+        alarms={alarmSounds}
         setStatus={setStatus}
+        setMinutes={setMinutes}
+        setSeconds={setSeconds}
         minutes={minutes}
         seconds={seconds}
       ></Counter>

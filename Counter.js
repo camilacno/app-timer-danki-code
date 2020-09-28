@@ -1,9 +1,74 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Picker, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
+import { Audio } from 'expo-av';
 
 export default function Counter(props) {
+  var done = false;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      props.setSeconds(props.seconds - 1);
+
+      if (props.seconds <= 0) {
+        if (props.minutes > 0) {
+          props.setMinutes(minutes - 1);
+          props.setSeconds(59);
+        } else {
+          if (!done) {
+            done = true;
+            props.setStatus('select');
+            props.setMinutes(0);
+            props.setSeconds(1);
+            playSound();
+          }
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  });
+
+  async function playSound() {
+    const soundObject = new Audio.Sound();
+    try {
+      var alarme;
+
+      props.alarms.map((alarm) => {
+        if (alarm.selected) {
+          alarme = alarm.file;
+        }
+      });
+
+      await soundObject.loadAsync(alarme);
+      await soundObject.playAsync();
+
+      // await soundObject.unloadAsync();
+    } catch (error) {
+      // An error occurred!
+    }
+  }
+
+  function resetStatus() {
+    props.setStatus('select');
+    props.setMinutes(0);
+    props.setSeconds(1);
+  }
+
+  function formatNumber(number) {
+    var finalNumber = '';
+    if (number < 10) {
+      finalNumber = `0${number}`;
+    } else {
+      finalNumber = number;
+    }
+    return finalNumber;
+  }
+
+  var seconds = formatNumber(props.seconds);
+  var minutes = formatNumber(props.minutes);
+
   return (
     <View style={styles.container}>
       <StatusBar hidden />
@@ -21,14 +86,11 @@ export default function Counter(props) {
       />
 
       <View style={styles.counterContainer}>
-        <Text style={styles.counterText}>{props.minutes} : </Text>
-        <Text style={styles.counterText}>{props.seconds}</Text>
+        <Text style={styles.counterText}>{minutes} : </Text>
+        <Text style={styles.counterText}>{seconds}</Text>
       </View>
 
-      <TouchableOpacity
-        style={styles.btnReset}
-        onPress={() => props.setStatus('select')}
-      >
+      <TouchableOpacity style={styles.btnReset} onPress={() => resetStatus()}>
         <Text style={{ color: '#fff', fontWeight: 'bold' }}>Reset</Text>
       </TouchableOpacity>
     </View>
