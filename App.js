@@ -46,90 +46,105 @@ export default function App() {
     setAlarmSounds(tempAlarms);
   }
 
-  return (
-    <View style={styles.container}>
-      <StatusBar hidden />
+  if (status == 'select') {
+    return (
+      <View style={styles.container}>
+        <StatusBar hidden />
 
-      <LinearGradient
-        // Background Linear Gradient
-        colors={['rgba(44, 136, 138, 1)', 'rgba(44, 136, 138, 0.6)']}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          top: 0,
-          height: '100%',
-        }}
-      />
+        <LinearGradient
+          // Background Linear Gradient
+          colors={['rgba(44, 136, 138, 1)', 'rgba(44, 136, 138, 0.4)']}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            height: '100%',
+          }}
+        />
 
-      <Text style={{ color: '#fff', fontSize: 20, padding: 10 }}>
-        Define your timer:
-      </Text>
+        <Text style={{ color: '#fff', fontSize: 20, padding: 10 }}>
+          Define your timer:
+        </Text>
 
-      <View style={styles.pickersContainer}>
-        <View style={styles.picker}>
-          <Text style={{ color: '#fff' }}>Min:</Text>
-          <Picker
-            style={{ height: 50, width: 100, color: 'white' }}
-            selectedValue={minutes}
-            onValueChange={(itemValue, itemIndex) => setMinutes(itemValue)}
-          >
-            {numbers.map(function (val) {
-              return (
-                <Picker.Item label={val.toString()} value={val.toString()} />
-              );
-            })}
-          </Picker>
+        <View style={styles.pickersContainer}>
+          <View style={styles.picker}>
+            <Text style={{ color: '#fff' }}>Min:</Text>
+            <Picker
+              style={{ height: 50, width: 100, color: 'white' }}
+              selectedValue={minutes}
+              onValueChange={(itemValue, itemIndex) => setMinutes(itemValue)}
+            >
+              {numbers.map(function (val) {
+                return (
+                  <Picker.Item label={val.toString()} value={val.toString()} />
+                );
+              })}
+            </Picker>
+          </View>
+
+          <View style={styles.picker}>
+            <Text style={{ color: '#fff' }}>Sec:</Text>
+            <Picker
+              selectedValue={seconds}
+              onValueChange={(itemValue, itemIndex) => setSeconds(itemValue)}
+              style={{ height: 50, width: 100, color: 'white' }}
+            >
+              <Picker.Item label='0' value='0' />
+              {numbers.map(function (val) {
+                return (
+                  <Picker.Item
+                    key={val}
+                    label={val.toString()}
+                    value={val.toString()}
+                  />
+                );
+              })}
+            </Picker>
+          </View>
         </View>
 
-        <View style={styles.picker}>
-          <Text style={{ color: '#fff' }}>Sec:</Text>
-          <Picker
-            selectedValue={seconds}
-            onValueChange={(itemValue, itemIndex) => setSeconds(itemValue)}
-            style={{ height: 50, width: 100, color: 'white' }}
-          >
-            <Picker.Item label='0' value='0' />
-            {numbers.map(function (val) {
+        <View style={styles.btnContainer}>
+          {alarmSounds.map((alarm) => {
+            if (alarm?.selected) {
               return (
-                <Picker.Item
-                  key={val}
-                  label={val.toString()}
-                  value={val.toString()}
-                />
+                <TouchableOpacity
+                  style={styles.btnAlarmSelected}
+                  key={alarm.id}
+                  onPress={() => chooseAlarm(alarm.id)}
+                >
+                  <Text style={{ color: '#fff' }}>{alarm.sound}</Text>
+                </TouchableOpacity>
               );
-            })}
-          </Picker>
+            } else {
+              return (
+                <TouchableOpacity
+                  style={styles.btnAlarm}
+                  key={alarm.id}
+                  onPress={() => chooseAlarm(alarm.id)}
+                >
+                  <Text style={{ color: '#fff' }}>{alarm.sound}</Text>
+                </TouchableOpacity>
+              );
+            }
+          })}
         </View>
-      </View>
 
-      <View style={styles.btnContainer}>
-        {alarmSounds.map((alarm) => {
-          if (alarm?.selected) {
-            return (
-              <TouchableOpacity
-                style={styles.btnAlarmSelected}
-                key={alarm.id}
-                onPress={() => chooseAlarm(alarm.id)}
-              >
-                <Text style={{ color: '#fff' }}>{alarm.sound}</Text>
-              </TouchableOpacity>
-            );
-          } else {
-            return (
-              <TouchableOpacity
-                style={styles.btnAlarm}
-                key={alarm.id}
-                onPress={() => chooseAlarm(alarm.id)}
-              >
-                <Text style={{ color: '#fff' }}>{alarm.sound}</Text>
-              </TouchableOpacity>
-            );
-          }
-        })}
+        <TouchableOpacity
+          style={styles.btnPlay}
+          onPress={() => setStatus('play')}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Play!</Text>
+        </TouchableOpacity>
       </View>
-    </View>
-  );
+    );
+  } else if (status == 'play') {
+    return (
+      <View>
+        <Text>Sound On!</Text>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
   },
   btnAlarm: {
     padding: 10,
-    backgroundColor: 'rgba(44, 136, 138, 0.8)',
+    backgroundColor: 'rgba(44, 136, 138, 0.7)',
     alignItems: 'center',
     borderRadius: 10,
   },
@@ -162,6 +177,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(44, 136, 138)',
     alignItems: 'center',
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#fff',
+  },
+  btnPlay: {
+    backgroundColor: 'rgb(44, 136, 138)',
+    height: 80,
+    width: 80,
+    marginTop: 10,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#fff',
   },
